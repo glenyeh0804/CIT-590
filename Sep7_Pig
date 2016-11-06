@@ -1,0 +1,160 @@
+# Name: Ting-Chun Yeh
+
+"""Brief description of the program: This program runs a simple game, Pig. It asks user compete with the computer.
+The user and the computer take turns and roll a six-sided die as many times as they wish, or until they roll a 1.
+Each number they roll, except a 1, is added to their scores that turn; but if they roll a 1, the score for this turn
+is zero, and that turn ends. At the end of each turn, the score for that turn is added to the player's total score.
+The first player to reach or exceed 100 wins.
+
+As defined above, the first player has an advantage. To make the game more fair, we will say that if the first player
+reaches or exceeds 100, the second player gets one additional turn. (If the second player is the first to reach 100,
+the first player does not get an additional turn.) The computer always goes first, so the player gets one more turn
+if the computer is the first to reach 100.
+
+If both players are tied with 100 or more, each gets another turn until the tie is broken."""
+
+# Import the file to use the function "random.randint()"
+import random
+
+def main():
+    """This is the main function of this program that consolidates other functions.
+    Includes: Setting initial values, rolling the dice, comparing the scores, and showing the final results"""
+
+    # Initialize the game
+    instruction()
+    computer_score = 0
+    human_score = 0
+    game_over = False
+
+    # Each party takes turns until one party gets 100 scores or more. Computer always goes first.
+    while not game_over:
+        computer_score += computer_move(computer_score, human_score)
+        human_score += human_move(computer_score, human_score)
+        game_over = is_game_over(computer_score, human_score)
+
+    # Show the result of the game. Also the end of the game.
+    show_results(computer_score, human_score)
+
+
+def computer_move(computer_score, human_score):
+    """Make the computer "roll" the dice and become more aggressively (more rolls per turn) if it is behind"""
+
+    # If the computer is behind, more rolls per turn
+    score_difference = computer_score - human_score
+
+    if score_difference > 0:
+        ai_aggressive = 3
+    else:
+        ai_aggressive = 6
+
+    # Randomly choose the number of rolls in this turn for the computer
+    ai_turns = random.randint(1, ai_aggressive)
+
+    # Computer rolls the dice and return the value
+    ai_roll_turn = 0
+
+    for i in range(1, ai_turns):
+        ai_roll_result = roll()
+        if ai_roll_result == 1:
+            return 0
+        else:
+            ai_roll_turn += ai_roll_result
+
+    return ai_roll_turn
+
+
+def human_move(computer_score, human_score):
+    """Show player current status, roll the dice, and calculate the final result"""
+
+    # Calculate the score difference and print the current status
+    score_difference = computer_score - human_score
+
+    # Determine the current competition status (ahead/behind/tie)
+    if score_difference > 0:
+        current_status = "You're far behind by " + str(score_difference)
+    elif score_difference < 0:
+        positive_score_difference = str(score_difference * -1)
+        current_status = "You're ahead by " + positive_score_difference
+    else:
+        current_status = "You're tied with the computer!"
+
+    print("Your current score:", human_score, "The computer's score:", computer_score, current_status)
+
+    # ask whether the player rolls the dice and return the value
+    roll_turn = 0
+
+    while ask_yes_or_no():
+        roll_result = roll()
+        if roll_result == 1:
+            return 0
+        else:
+            roll_turn += roll_result
+            print("The total of the rolls made during this move:", roll_turn)
+
+    print("The total of the rolls made during this move:", roll_turn)
+    return roll_turn
+
+
+
+def ask_yes_or_no():
+    """Ask whether the user rolls the dice for this turn or not"""
+
+    roll_dice = input("Would you like to roll the dice? Please type Y (for yes) or N (for no):")
+
+    if roll_dice[0] == "Y" or roll_dice[0] == "y":
+        return True
+
+    elif roll_dice[0] == "N" or roll_dice[0] == "n":
+        return False
+
+    else:
+        print("Only Y/y/N/n are acceptable. Please type again!")
+        return ask_yes_or_no()
+
+
+def roll():
+    """Produce random numbers for rolling result"""
+    roll_number = random.randint(1, 6)
+    return roll_number
+
+
+def is_game_over(computer_score, human_score):
+    """Determine whether the game is over or not by comparing two players' scores"""
+    if computer_score == human_score:
+        return False
+    elif computer_score >= 100 or human_score >= 100:
+        return True
+    else:
+        return False
+
+def show_results(computer_score, human_score):
+    """Show the final results"""
+
+    print("Your current score:", human_score, "The computer's score:", computer_score)
+    final_difference = human_score - computer_score
+
+    if final_difference > 0:
+        print("Congratulations! You won the game by:", final_difference)
+    else:
+        print("Oh no! You lost the game by:", -1 * final_difference)
+
+def instruction():
+    """Show the instructions of the game for users"""
+
+    print("<Game Instruction>\n")
+    print("Pig is a very simple game. Two players take turns;")
+    print("On each turn, you roll a six-sided die as many times as you wish, or until you roll a 1.")
+    print("Each number you roll, except a 1, is added to your score this turn;")
+    print("but if you roll a 1, your score for this turn is zero, and your turn ends.")
+    print("At the end of each turn, the score for that turn is added to your total score.")
+    print("The first player to reach or exceed 100 wins.\n")
+    print("As defined above, the first player has an advantage.")
+    print("To make the game more fair, we will say that if the first player reaches or exceeds 100,")
+    print("the second player gets one additional turn.")
+    print("If the second player is the first to reach 100, the first player does not get an additional turn.")
+    print("The computer always goes first, so you get one more turn if the computer is the first to reach 100.")
+    print("If both players are tied with 100 or more, each gets another turn until the tie is broken.\n")
+    print("<End of Instruction>\n")
+
+# Execute the program
+main()
