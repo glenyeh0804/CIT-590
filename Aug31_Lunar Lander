@@ -1,0 +1,64 @@
+# define how this game runs
+def lunarlander():
+
+    # set initial values
+    altitude = 1000.0
+    velocity = 0.0
+    fuel = 1000.0
+    repeat = 1
+
+    print("Your altitude:", altitude, "Your velocity:", velocity, "Your fuel:", fuel)
+          
+    while repeat == 1:
+        # decide the amount of fuel burned
+        burned = float(input("How much fuel would you like to burn this time?"))
+
+        if burned > fuel:
+            burned = fuel
+            fuel = 0.0
+        elif burned < 0:
+            burned = 0.0
+        else:
+            fuel -= burned
+
+        # determine the altitude
+        velocity += 1.6
+        velocity -= 0.15 * burned
+        altitude -= velocity
+
+        # determine landed or not                                     
+        # determine safely landed or not
+        if altitude <= 0:
+            if velocity <= 10:
+                altitude = 0.0
+                print("Your final altitude:", altitude, "Your final velocity:", velocity, "Your final fuel:", fuel)
+                print("It's safe landing! Congratulations!")
+                repeat = 0
+            else:
+                print("You have blasted a deep crater! The depth is:", velocity)
+                repeat = 0
+        # Start the next session
+        else:
+            print("Your altitude:", altitude, "Your velocity:", velocity, "Your fuel:", fuel)
+            repeat = 1
+
+# ask the players play again (or not)
+def repeat_again():
+
+    game_repeat = input("Would you like to play the game again? Please type Y (for yes) or N (for no):")
+
+    if game_repeat[0] == "Y" or game_repeat[0] == "y":
+        lunarlander()
+        return repeat_again()
+
+    elif game_repeat[0] == "N" or game_repeat[0] == "n":
+        print("Thank you for playing this game.")
+        return False
+
+    else:
+        print("Only Y/y/N/n are acceptable. Please type again!")
+        return repeat_again()
+
+# run the program
+lunarlander()
+repeat_again()
